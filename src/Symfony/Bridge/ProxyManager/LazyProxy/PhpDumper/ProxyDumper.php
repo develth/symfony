@@ -26,19 +26,8 @@ use Symfony\Component\DependencyInjection\LazyProxy\PhpDumper\DumperInterface;
  */
 class ProxyDumper implements DumperInterface
 {
-    /**
-     * @var string
-     */
     private $salt;
-
-    /**
-     * @var LazyLoadingValueHolderGenerator
-     */
     private $proxyGenerator;
-
-    /**
-     * @var BaseGeneratorStrategy
-     */
     private $classGenerator;
 
     /**
@@ -112,8 +101,6 @@ EOF;
 
     /**
      * Produces the proxy class name for the given definition.
-     *
-     * @param Definition $definition
      *
      * @return string
      */

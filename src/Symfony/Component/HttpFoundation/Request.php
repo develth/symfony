@@ -144,7 +144,7 @@ class Request
     public $headers;
 
     /**
-     * @var string
+     * @var string|resource
      */
     protected $content;
 
@@ -221,7 +221,6 @@ class Request
     protected static $requestFactory;
 
     private $isHostValid = true;
-    private $isClientIpsValid = true;
     private $isForwardedValid = true;
 
     private static $trustedHeaderSet = -1;
@@ -796,8 +795,8 @@ class Request
      *
      * Order of precedence: PATH (routing placeholders or custom attributes), GET, BODY
      *
-     * @param string $key     the key
-     * @param mixed  $default the default value if the parameter key does not exist
+     * @param string $key     The key
+     * @param mixed  $default The default value if the parameter key does not exist
      *
      * @return mixed
      */

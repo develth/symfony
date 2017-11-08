@@ -102,6 +102,12 @@ class NativeSessionStorage implements SessionStorageInterface
      */
     public function __construct(array $options = array(), $handler = null, MetadataBag $metaBag = null)
     {
+        $this->setMetadataBag($metaBag);
+
+        if (\PHP_SESSION_ACTIVE === session_status()) {
+            return;
+        }
+
         $options += array(
             // disable by default because it's managed by HeaderBag (if used)
             'cache_limiter' => '',
@@ -110,7 +116,6 @@ class NativeSessionStorage implements SessionStorageInterface
 
         session_register_shutdown();
 
-        $this->setMetadataBag($metaBag);
         $this->setOptions($options);
         $this->setSaveHandler($handler);
     }
@@ -291,11 +296,6 @@ class NativeSessionStorage implements SessionStorageInterface
         return $this->bags[$name];
     }
 
-    /**
-     * Sets the MetadataBag.
-     *
-     * @param MetadataBag $metaBag
-     */
     public function setMetadataBag(MetadataBag $metaBag = null)
     {
         if (null === $metaBag) {
@@ -414,8 +414,6 @@ class NativeSessionStorage implements SessionStorageInterface
      * are set to (either PHP's internal, or a custom save handler set with session_set_save_handler()).
      * PHP takes the return value from the read() handler, unserializes it
      * and populates $_SESSION with the result automatically.
-     *
-     * @param array|null $session
      */
     protected function loadSession(array &$session = null)
     {

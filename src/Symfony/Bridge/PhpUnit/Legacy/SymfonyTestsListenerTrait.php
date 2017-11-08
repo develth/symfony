@@ -262,11 +262,12 @@ class SymfonyTestsListenerTrait
         if ($this->runsInSeparateProcess) {
             $deprecations = file_get_contents($this->runsInSeparateProcess);
             unlink($this->runsInSeparateProcess);
+            putenv('SYMFONY_DEPRECATIONS_SERIALIZE');
             foreach ($deprecations ? unserialize($deprecations) : array() as $deprecation) {
                 if ($deprecation[0]) {
-                    trigger_error($deprecation[1], E_USER_DEPRECATED);
+                    trigger_error(serialize(array('deprecation' => $deprecation[1], 'class' => $className, 'method' => $test->getName(false))), E_USER_DEPRECATED);
                 } else {
-                    @trigger_error($deprecation[1], E_USER_DEPRECATED);
+                    @trigger_error(serialize(array('deprecation' => $deprecation[1], 'class' => $className, 'method' => $test->getName(false))), E_USER_DEPRECATED);
                 }
             }
             $this->runsInSeparateProcess = false;
@@ -326,6 +327,12 @@ class SymfonyTestsListenerTrait
 
             return $h ? $h($type, $msg, $file, $line, $context) : false;
         }
+        // If the message is serialized we need to extract the message. This occurs when the error is triggered by
+        // by the isolated test path in \Symfony\Bridge\PhpUnit\Legacy\SymfonyTestsListenerTrait::endTest().
+        $parsedMsg = @unserialize($msg);
+        if (is_array($parsedMsg)) {
+            $msg = $parsedMsg['deprecation'];
+        }
         if (error_reporting()) {
             $msg = 'Unsilenced deprecation: '.$msg;
         }
@@ -333,7 +340,7 @@ class SymfonyTestsListenerTrait
     }
 
     /**
-     * @param Test $test
+     * @param TestCase $test
      *
      * @return bool
      */
