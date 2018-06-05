@@ -9,20 +9,15 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Bridge\PhpUnit\Legacy;
+namespace Symfony\Component\Security\Csrf\TokenStorage;
 
 /**
- * {@inheritdoc}
- *
- * @internal
+ * @author Christian Flothmann <christian.flothmann@sensiolabs.de>
  */
-class Command extends \PHPUnit_TextUI_Command
+interface ClearableTokenStorageInterface extends TokenStorageInterface
 {
     /**
-     * {@inheritdoc}
+     * Removes all CSRF tokens.
      */
-    protected function createRunner()
-    {
-        return new TestRunner($this->arguments['loader']);
-    }
+    public function clear();
 }
